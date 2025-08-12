@@ -9,18 +9,20 @@ import { QuizGame } from './components/QuizGame';
 import { LoginScreen } from './components/LoginScreen';
 import { UserProfile } from './components/UserProfile';
 import { StudyMode } from './components/StudyMode';
+import { InstructionsPage } from './components/InstructionsPage';
 import { AccessibilityProvider } from './components/AccessibilityProvider';
 import { GameState, Player, GameSettings } from './types/game';
 import { UserProfile as UserProfileType } from './types/user';
 import { UserService } from './services/userService';
 import { generateRoomCode } from './utils/gameLogic';
 import { v4 as uuidv4 } from 'uuid';
-import { User, BookOpen, Settings } from 'lucide-react';
+import { User, BookOpen, Settings, HelpCircle } from 'lucide-react';
 
 function App() {
   const [user, setUser] = useState<UserProfileType | null>(null);
   const [showProfile, setShowProfile] = useState(false);
   const [showStudyMode, setShowStudyMode] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
   const [gameState, setGameState] = useState<GameState>({
     screen: 'welcome',
     mode: null,
@@ -61,6 +63,7 @@ function App() {
     setUser(null);
     setShowProfile(false);
     setShowStudyMode(false);
+    setShowInstructions(false);
     setGameState({
       ...gameState,
       screen: 'welcome',
@@ -198,6 +201,15 @@ function App() {
     );
   }
 
+  // Show instructions if selected
+  if (showInstructions) {
+    return (
+      <AccessibilityProvider preferences={user.preferences}>
+        <InstructionsPage onBack={() => setShowInstructions(false)} />
+      </AccessibilityProvider>
+    );
+  }
+
   return (
     <AccessibilityProvider preferences={user.preferences}>
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800">
@@ -209,6 +221,14 @@ function App() {
         {/* User Navigation Bar */}
         {gameState.screen === 'welcome' && (
           <div className="fixed top-0 right-0 p-4 z-50 flex items-center space-x-4">
+            <button
+              onClick={() => setShowInstructions(true)}
+              className="flex items-center space-x-2 bg-slate-800/90 backdrop-blur-sm hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors border border-slate-600"
+              aria-label="View game instructions"
+            >
+              <HelpCircle className="w-4 h-4" />
+              <span>How to Play</span>
+            </button>
             <button
               onClick={() => setShowStudyMode(true)}
               className="flex items-center space-x-2 bg-slate-800/90 backdrop-blur-sm hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors border border-slate-600"
